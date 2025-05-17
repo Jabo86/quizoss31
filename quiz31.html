@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 12</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            margin: 0;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        #timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .question-box {
+            width: 40px;
+            height: 40px;
+            margin: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .question-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question-box.answered {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.6em;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: linear-gradient(90deg, #00eaff, #00b8d4);
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff;
+        }
+
+        .option.wrong {
+            background: linear-gradient(90deg, #ff5252, #d81b60);
+            color: #fff;
+            box-shadow: 0 0 15px #ff5252;
+        }
+
+        .lamp {
+            display: none;
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp:hover {
+            transform: scale(1.2);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ffd700;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-button:disabled {
+            background: #666;
+            color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button#submit {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(45deg, #00eaff, #00b8d4);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.3em;
+            box-shadow: 0 0 15px #00eaff;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button#submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00eaff;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 12</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (331-360) con opzioni mescolate casualmente
+        const questions = [
+            {
+                question: "Cos’è l’artrite reumatoide?",
+                options: ["Un’infiammazione della vescica", "Una malattia autoimmune delle articolazioni", "Un accumulo di liquido nei polmoni"],
+                correct: "Una malattia autoimmune delle articolazioni",
+                explanation: "L’artrite reumatoide è una malattia autoimmune che causa infiammazione cronica delle articolazioni, con sintomi come dolore, gonfiore e rigidità. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare il dolore, assistere nella mobilità e segnalare deformità articolari."
+            },
+            {
+                question: "Quale è un segno tipico dell’artrite reumatoide?",
+                options: ["Rigidità articolare mattutina", "Poliuria", "Ittero"],
+                correct: "Rigidità articolare mattutina",
+                explanation: "La rigidità articolare mattutina, che dura più di 30 minuti, è un segno tipico dell’artrite reumatoide. La poliuria e l’ittero non sono correlati. Gli OSS devono aiutare il paziente con esercizi leggeri, monitorare il dolore e segnalare peggioramenti."
+            },
+            {
+                question: "Cos’è l’artrosi?",
+                options: ["Un’infiammazione del fegato", "Una degenerazione della cartilagine articolare", "Un blocco renale"],
+                correct: "Una degenerazione della cartilagine articolare",
+                explanation: "L’artrosi è una malattia degenerativa che causa la perdita di cartilagine articolare, con sintomi come dolore e ridotta mobilità. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono assistere nella mobilizzazione, applicare calore se prescritto e segnalare limitazioni funzionali."
+            },
+            {
+                question: "Quale è un segno tipico dell’artrosi?",
+                options: ["Dolore articolare da carico", "Oliguria", "Ittero"],
+                correct: "Dolore articolare da carico",
+                explanation: "Il dolore articolare da carico, che peggiora con il movimento, è un segno tipico dell’artrosi, spesso accompagnato da crepitii. L’oliguria e l’ittero non sono correlati. Gli OSS devono monitorare il dolore, evitare sovraccarichi e segnalare riduzioni della mobilità."
+            },
+            {
+                question: "Cos’è l’osteoporosi?",
+                options: ["Un’infiammazione della vescica", "Una riduzione della densità ossea", "Un accumulo di liquido nei polmoni"],
+                correct: "Una riduzione della densità ossea",
+                explanation: "L’osteoporosi è una condizione caratterizzata da una riduzione della densità ossea, che aumenta il rischio di fratture. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono prevenire cadute, assistere nella deambulazione e segnalare dolori ossei."
+            },
+            {
+                question: "Quale è un segno tipico dell’osteoporosi?",
+                options: ["Fratture spontanee", "Poliuria", "Ittero"],
+                correct: "Fratture spontanee",
+                explanation: "Le fratture spontanee, soprattutto a vertebre o femore, sono un segno tipico dell’osteoporosi, dovuto alla fragilità ossea. La poliuria e l’ittero non sono correlati. Gli OSS devono garantire la sicurezza del paziente, evitare movimenti bruschi e segnalare sospette fratture."
+            },
+            {
+                question: "Cos’è la gotta?",
+                options: ["Un’infiammazione del fegato", "Un’artrite da accumulo di acido urico", "Un blocco renale"],
+                correct: "Un’artrite da accumulo di acido urico",
+                explanation: "La gotta è un’artrite causata dall’accumulo di cristalli di acido urico nelle articolazioni, con sintomi come dolore acuto e gonfiore, spesso all’alluce. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare il dolore, garantire una dieta povera di purine e segnalare crisi acute."
+            },
+            {
+                question: "Quale è un segno tipico della gotta?",
+                options: ["Dolore acuto all’alluce", "Oliguria", "Ittero"],
+                correct: "Dolore acuto all’alluce",
+                explanation: "Il dolore acuto all’alluce, spesso notturno, è un segno tipico della gotta, accompagnato da gonfiore e arrossamento. L’oliguria e l’ittero non sono correlati. Gli OSS devono applicare impacchi freddi se prescritti, monitorare il dolore e segnalare crisi ricorrenti."
+            },
+            {
+                question: "Cos’è la scoliosi?",
+                options: ["Un’infiammazione della vescica", "Una curvatura laterale della colonna vertebrale", "Un accumulo di liquido nei polmoni"],
+                correct: "Una curvatura laterale della colonna vertebrale",
+                explanation: "La scoliosi è una curvatura laterale anomala della colonna vertebrale, spesso diagnosticata in età giovanile, che può causare dolore e deformità. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare la postura, assistere con busti se prescritti e segnalare peggioramenti."
+            },
+            {
+                question: "Quale è un segno tipico della scoliosi?",
+                options: ["Asimmetria delle spalle", "Poliuria", "Ittero"],
+                correct: "Asimmetria delle spalle",
+                explanation: "L’asimmetria delle spalle o del bacino è un segno tipico della scoliosi, visibile durante l’esame fisico. La poliuria e l’ittero non sono correlati. Gli OSS devono osservare la postura del paziente, supportare esercizi correttivi e segnalare deformità evidenti."
+            },
+            {
+                question: "Cos’è la lussazione?",
+                options: ["Un’infiammazione del fegato", "Uno spostamento di un osso dall’articolazione", "Un blocco renale"],
+                correct: "Uno spostamento di un osso dall’articolazione",
+                explanation: "La lussazione è lo spostamento di un osso dalla sua articolazione, spesso causata da traumi, con sintomi come dolore e deformità. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono immobilizzare l’arto, applicare ghiaccio se prescritto e segnalare immediatamente."
+            },
+            {
+                question: "Quale è un segno tipico della lussazione?",
+                options: ["Deformità articolare", "Oliguria", "Ittero"],
+                correct: "Deformità articolare",
+                explanation: "La deformità articolare, accompagnata da dolore e impossibilità di movimento, è un segno tipico della lussazione. L’oliguria e l’ittero non sono correlati. Gli OSS devono evitare manipolazioni, immobilizzare l’arto e segnalare la lussazione per un intervento medico."
+            },
+            {
+                question: "Cos’è una frattura?",
+                options: ["Un’infiammazione della vescica", "Una rottura di un osso", "Un accumulo di liquido nei polmoni"],
+                correct: "Una rottura di un osso",
+                explanation: "Una frattura è la rottura parziale o completa di un osso, causata da traumi o fragilità (es. osteoporosi), con sintomi come dolore e gonfiore. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono immobilizzare la parte, applicare ghiaccio e segnalare immediatamente."
+            },
+            {
+                question: "Quale è un segno tipico della frattura?",
+                options: ["Dolore e gonfiore", "Poliuria", "Ittero"],
+                correct: "Dolore e gonfiore",
+                explanation: "Il dolore e il gonfiore nella zona lesionata sono segni tipici di una frattura, spesso accompagnati da deformità. La poliuria e l’ittero non sono correlati. Gli OSS devono evitare movimenti, immobilizzare la parte e segnalare sintomi sospetti."
+            },
+            {
+                question: "Cos’è la miosite?",
+                options: ["Un’infiammazione del fegato", "Un’infiammazione dei muscoli", "Un blocco renale"],
+                correct: "Un’infiammazione dei muscoli",
+                explanation: "La miosite è un’infiammazione dei muscoli, spesso causata da infezioni, traumi o malattie autoimmuni, con sintomi come dolore e debolezza muscolare. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare il dolore, assistere nella mobilità e segnalare debolezza."
+            },
+            {
+                question: "Cos’è la distorsione?",
+                options: ["Un’infiammazione della vescica", "Una lesione dei legamenti articolari", "Un accumulo di liquido nei polmoni"],
+                correct: "Una lesione dei legamenti articolari",
+                explanation: "La distorsione è una lesione dei legamenti articolari, spesso causata da movimenti improvvisi, con sintomi come dolore e gonfiore. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono applicare ghiaccio, immobilizzare l’articolazione e segnalare gonfiore persistente."
+            },
+            {
+                question: "Quale è un segno tipico della distorsione?",
+                options: ["Gonfiore articolare", "Oliguria", "Ittero"],
+                correct: "Gonfiore articolare",
+                explanation: "Il gonfiore articolare, accompagnato da dolore e limitazione del movimento, è un segno tipico della distorsione. L’oliguria e l’ittero non sono correlati. Gli OSS devono elevare l’arto, applicare ghiaccio e segnalare sintomi persistenti."
+            },
+            {
+                question: "Cos’è la tendinite?",
+                options: ["Un’infiammazione del fegato", "Un’infiammazione di un tendine", "Un blocco renale"],
+                correct: "Un’infiammazione di un tendine",
+                explanation: "La tendinite è un’infiammazione di un tendine, spesso causata da sovraccarico o traumi ripetuti, con sintomi come dolore e rigidità. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono applicare ghiaccio se prescritto, evitare sforzi e segnalare dolore persistente."
+            },
+            {
+                question: "Quale è un segno tipico della tendinite?",
+                options: ["Dolore al movimento", "Poliuria", "Ittero"],
+                correct: "Dolore al movimento",
+                explanation: "Il dolore al movimento, spesso localizzato al tendine, è un segno tipico della tendinite. La poliuria e l’ittero non sono correlati. Gli OSS devono monitorare il dolore, garantire il riposo della parte e segnalare sintomi prolungati."
+            },
+            {
+                question: "Cos’è la borsite?",
+                options: ["Un’infiammazione della vescica", "Un’infiammazione di una borsa sinoviale", "Un accumulo di liquido nei polmoni"],
+                correct: "Un’infiammazione di una borsa sinoviale",
+                explanation: "La borsite è un’infiammazione di una borsa sinoviale, che riduce l’attrito tra ossa e tessuti, spesso causata da traumi o sovraccarico, con sintomi come dolore e gonfiore. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono applicare ghiaccio e segnalare gonfiore."
+            },
+            {
+                question: "Quale è un segno tipico della borsite?",
+                options: ["Gonfiore localizzato", "Oliguria", "Ittero"],
+                correct: "Gonfiore localizzato",
+                explanation: "Il gonfiore localizzato, spesso con dolore e calore, è un segno tipico della borsite. L’oliguria e l’ittero non sono correlati. Gli OSS devono monitorare il gonfiore, evitare pressioni sulla zona e segnalare sintomi persistenti."
+            },
+            {
+                question: "Cos’è la sindrome del tunnel carpale?",
+                options: ["Un’infiammazione del fegato", "Una compressione del nervo mediano al polso", "Un blocco renale"],
+                correct: "Una compressione del nervo mediano al polso",
+                explanation: "La sindrome del tunnel carpale è una compressione del nervo mediano al polso, con sintomi come formicolio e dolore alla mano. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare i sintomi, assistere con tutori se prescritti e segnalare debolezza."
+            },
+            {
+                question: "Quale è un segno tipico della sindrome del tunnel carpale?",
+                options: ["Formicolio alle dita", "Poliuria", "Ittero"],
+                correct: "Formicolio alle dita",
+                explanation: "Il formicolio alle dita, specialmente pollice, indice e medio, è un segno tipico della sindrome del tunnel carpale. La poliuria e l’ittero non sono correlati. Gli OSS devono evitare movimenti ripetitivi, monitorare i sintomi e segnalare dolore persistente."
+            },
+            {
+                question: "Cos’è la fibromialgia?",
+                options: ["Un’infiammazione della vescica", "Una condizione di dolore muscoloscheletrico cronico", "Un accumulo di liquido nei polmoni"],
+                correct: "Una condizione di dolore muscoloscheletrico cronico",
+                explanation: "La fibromialgia è una condizione cronica caratterizzata da dolore muscoloscheletrico diffuso, stanchezza e punti dolenti. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare il dolore, promuovere il riposo e segnalare sintomi depressivi."
+            },
+            {
+                question: "Quale è un segno tipico della fibromialgia?",
+                options: ["Dolore muscolare diffuso", "Oliguria", "Ittero"],
+                correct: "Dolore muscolare diffuso",
+                explanation: "Il dolore muscolare diffuso, spesso con stanchezza, è un segno tipico della fibromialgia. L’oliguria e l’ittero non sono correlati. Gli OSS devono assistere con esercizi leggeri, monitorare il benessere psicofisico e segnalare sintomi gravi."
+            },
+            {
+                question: "Cos’è la contrattura muscolare?",
+                options: ["Un’infiammazione del fegato", "Un accorciamento involontario di un muscolo", "Un blocco renale"],
+                correct: "Un accorciamento involontario di un muscolo",
+                explanation: "La contrattura muscolare è un accorciamento involontario e persistente di un muscolo, spesso causato da sovraccarico, con sintomi come dolore e rigidità. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono applicare calore se prescritto e segnalare dolore persistente."
+            },
+            {
+                question: "Cos’è la lordosi?",
+                options: ["Un’infiammazione della vescica", "Una curvatura anomala della colonna lombare", "Un accumulo di liquido nei polmoni"],
+                correct: "Una curvatura anomala della colonna lombare",
+                explanation: "La lordosi è una curvatura anomala (eccessiva) della colonna lombare, che può causare dolore e alterazioni posturali. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare la postura, supportare esercizi correttivi e segnalare dolore."
+            },
+            {
+                question: "Cos’è la cifosi?",
+                options: ["Un’infiammazione del fegato", "Una curvatura anomala della colonna toracica", "Un blocco renale"],
+                correct: "Una curvatura anomala della colonna toracica",
+                explanation: "La cifosi è una curvatura anomala (eccessiva) della colonna toracica, spesso visibile come gobba, che può causare dolore. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare la postura, assistere con busti se prescritti e segnalare deformità."
+            },
+            {
+                question: "Cos’è la spondilolistesi?",
+                options: ["Un’infiammazione della vescica", "Uno scivolamento di una vertebra", "Un accumulo di liquido nei polmoni"],
+                correct: "Uno scivolamento di una vertebra",
+                explanation: "La spondilolistesi è lo scivolamento di una vertebra rispetto a un’altra, spesso nella regione lombare, con sintomi come dolore e rigidità. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare il dolore, evitare sforzi e segnalare sintomi neurologici."
+            },
+            {
+                question: "Cos’è l’ernia del disco?",
+                options: ["Un’infiammazione del fegato", "Una protrusione del disco intervertebrale", "Un blocco renale"],
+                correct: "Una protrusione del disco intervertebrale",
+                explanation: "L’ernia del disco è una protrusione del disco intervertebrale che può comprimere i nervi, causando dolore lombare o sciatalgia. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare il dolore, evitare movimenti bruschi e segnalare sintomi neurologici."
+            },
+            {
+                question: "Quale è un segno tipico dell’ernia del disco?",
+                options: ["Sciatalgia", "Poliuria", "Ittero"],
+                correct: "Sciatalgia",
+                explanation: "La sciatalgia, ovvero il dolore irradiato lungo il nervo sciatico, è un segno tipico dell’ernia del disco lombare. La poliuria e l’ittero non sono correlati. Gli OSS devono monitorare il dolore, garantire il riposo e segnalare sintomi come debolezza muscolare."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                // Aggiungi evento per accendere il quadratino
+                const radios = questionDiv.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0); // Mostra la prima domanda
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+
+            // Gestione stato pulsanti
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+
+            // Disabilita i radio button dopo l'invio
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+
+            document.getElementById("submit").addEventListener("click", checkAnswers);
+        };
+    </script>
+</body>
+</html>
